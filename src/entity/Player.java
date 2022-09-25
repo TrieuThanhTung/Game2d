@@ -8,15 +8,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Player {
-    private int x = 100;
-    private int y = 100;
-    private final int speed = 4;
-
-    private BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-    private String direction = "down";
-    private int  spriteCouter = 0;
+public class Player extends Entity {
+    private int spriteCounter = 0;
     private int spriteNum = 1;
+
+    public final int screenX;
+    public final int screenY;
 
     private PanelGame panelGame;
     private KeyHandler keyHandler;
@@ -24,19 +21,30 @@ public class Player {
     public Player(PanelGame panelGame, KeyHandler keyHandler) {
         this.panelGame = panelGame;
         this.keyHandler = keyHandler;
+
+        screenX = panelGame.screenWidth / 2 - panelGame.tileSize;
+        screenY = panelGame.screenHeight / 2;
+
+        setDefaultValues();
         getPlayerImage();
+    }
+
+    public void setDefaultValues() {
+        worldX = panelGame.tileSize * 23;
+        worldY = panelGame.tileSize * 21;
+        direction = "down";
     }
 
     public void getPlayerImage() {
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/Image/player/boy_right_2.png"));
+            up1 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_up_1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_up_2.png"));
+            down1 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_down_1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_down_2.png"));
+            left1 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_left_1.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_left_2.png"));
+            right1 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_right_1.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/res/image/player/boy_right_2.png"));
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -59,29 +67,29 @@ public class Player {
     }
 
     public void update() {
-        if (keyHandler.isUpPressed() == true || keyHandler.isDownPressed() == true
-            || keyHandler.isRightPressed() == true || keyHandler.isLeftPressed() == true) {
-            if(keyHandler.isUpPressed() == true) {
+        if (keyHandler.isUpPressed() || keyHandler.isDownPressed()
+            || keyHandler.isRightPressed() || keyHandler.isLeftPressed()) {
+            if(keyHandler.isUpPressed()) {
                 direction = "up";
-                y -= speed;
-            } else if (keyHandler.isDownPressed() == true) {
+                worldY -= speed;
+            } else if (keyHandler.isDownPressed()) {
                 direction = "down";
-                y += speed;
-            } else if (keyHandler.isRightPressed() == true) {
+                worldY += speed;
+            } else if (keyHandler.isRightPressed()) {
                 direction = "right";
-                x += speed;
-            } else if (keyHandler.isLeftPressed() == true) {
+                worldX += speed;
+            } else if (keyHandler.isLeftPressed()) {
                 direction = "left";
-                x -= speed;
+                worldX -= speed;
             }
-            spriteCouter ++;
-            if (spriteCouter > 12) {
+            spriteCounter++;
+            if (spriteCounter > 12) {
                 if(spriteNum == 1) {
                     spriteNum = 2;
                 } else if (spriteNum == 2) {
                     spriteNum = 1;
                 }
-                spriteCouter = 0;
+                spriteCounter = 0;
             }
         }
     }
@@ -121,6 +129,6 @@ public class Player {
                 }
                 break;
         }
-        g2.drawImage(image, x, y, panelGame.tileSize, panelGame.tileSize, null);
+        g2.drawImage(image, screenX, screenY, panelGame.tileSize, panelGame.tileSize, null);
     }
 }

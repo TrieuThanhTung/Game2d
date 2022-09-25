@@ -17,23 +17,32 @@ public class TileManager {
 
     public TileManager(PanelGame panelGame) {
         this.panelGame = panelGame;
-        tile = new Tile[6];
-        mapTileNum = new int[panelGame.maxScreenCol][panelGame.maxScreenRow];
+        tile = new Tile[10];
+        mapTileNum = new int[panelGame.maxWorldCol][panelGame.maxWorldRow];
 
         getTileImage();
-        loadMap("/map/map01.txt");
+        loadMap("/res/map/world1.txt");
     }
 
     public void getTileImage() {
         try {
             tile[0] = new Tile();
-            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Image/titles/grass.png"));
+            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/grass.png"));
 
             tile[1] = new Tile();
-            tile[1].image = ImageIO.read(getClass().getResourceAsStream("/Image/titles/wall.png"));
+            tile[1].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/wall.png"));
 
             tile[2] = new Tile();
-            tile[2].image = ImageIO.read(getClass().getResourceAsStream("/Image/titles/water.png"));
+            tile[2].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/water.png"));
+
+            tile[3] = new Tile();
+            tile[3].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/earth.png"));
+
+            tile[4] = new Tile();
+            tile[4].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/tree.png"));
+
+            tile[5] = new Tile();
+            tile[5].image = ImageIO.read(getClass().getResourceAsStream("/res/image/titles/sand.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,15 +55,16 @@ public class TileManager {
 
             int col = 0;
             int row = 0;
-            while(col < panelGame.maxScreenCol && row < panelGame.maxScreenRow) {
+
+            while(col < panelGame.maxWorldCol && row < panelGame.maxWorldRow) {
                 String line = bufferedReader.readLine();
-                while(col < panelGame.maxScreenCol) {
+                while(col < panelGame.maxWorldCol) {
                     String numbers[] = line.split(" ");
                     int num = Integer.parseInt(numbers[col]);
                     mapTileNum[col][row] = num;
                     col++;
                 }
-                if(col == panelGame.maxScreenCol) {
+                if(col == panelGame.maxWorldCol) {
                     col = 0;
                     row++;
                 }
@@ -66,24 +76,24 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2) {
-        int col = 0;
-        int row = 0;
+        int worldCol = 0;
+        int worldRow = 0;
 
-        int x = 0;
-        int y = 0;
-        while(col < panelGame.maxScreenCol && row < panelGame.maxScreenRow) {
-            while(col < panelGame.maxScreenCol) {
-                int tileNum = mapTileNum[col][row];
-                g2.drawImage(tile[tileNum].image, x, y, panelGame.tileSize, panelGame.tileSize, null);
-                x += panelGame.tileSize;
-                col++;
+        while(worldCol < panelGame.maxWorldCol && worldRow < panelGame.maxWorldRow) {
+            while(worldCol < panelGame.maxWorldCol) {
+                int tileNum = mapTileNum[worldCol][worldRow];
+
+                int worldX = worldCol * panelGame.tileSize;
+                int worldY = worldRow * panelGame.tileSize;
+                int screenX = worldX - panelGame.player.worldX + panelGame.player.screenX;
+                int screenY = worldY - panelGame.player.worldY + panelGame.player.screenY;
+
+                g2.drawImage(tile[tileNum].image, screenX, screenY, panelGame.tileSize, panelGame.tileSize, null);
+                worldCol++;
             }
-            if(col == panelGame.maxScreenCol) {
-                col = 0;
-                row++;
-
-                x = 0;
-                y += panelGame.tileSize;
+            if(worldCol == panelGame.maxWorldCol) {
+                worldCol = 0;
+                worldRow++;
             }
         }
     }
